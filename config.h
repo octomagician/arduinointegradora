@@ -76,7 +76,7 @@ class Turbidez {
     float obtenerTurbi() {
       int turbidityRaw = analogRead(turbPin); // Leer valor ADC
       float turbidityVoltage = (turbidityRaw / (float)adcResolution) * refVoltage; // Convertir a voltaje
-      float turbidityValue = (turbidityVoltage / maxVoltage) * 1000;  // Escalar a rango arbitrario
+      float turbidityValue = (turbidityVoltage / maxVoltage) * 1000;  // Escalar a rango NTU
       return turbidityValue;
     }
 };
@@ -88,26 +88,26 @@ Turbidez turbidez[] = {Turbidez(35, "1", 4.5, 3.3, 4095)};
 //---PH-------------------------------------------------------------------
 class PH {
   public:
-    const int phPin;
-    String numero;
+    const int phPin;  // Pin del sensor de pH
+    String numero;    // Identificador del sensor
+    const float refVoltage; // Voltaje de referencia del ADC (5V)
 
-  PH(int pin, String num) 
-  : phPin(pin), numero(num) {
-    pinMode(phPin, INPUT);
-  }
+    PH(int pin, String num, float refV)
+    : phPin(pin), numero(num), refVoltage(refV) {
+      pinMode(phPin, INPUT);
+    }
 
-  float obtenerPH() {
-    int phValue = analogRead(phPin);
-    float voltage = phValue * (5.0 / 1023.0);
-    float pH = 3.5 * voltage;
-    return pH;
-  }
+    float obtenerVoltaje() {
+      int phRaw = analogRead(phPin); // Leer valor analógico
+      float pH = (phRaw / 4095.0) * refVoltage; // Convertir a voltaje
+      return pH;
+    }
 };
 
-PH sensorPH[] = {PH(34, "1")};
+                  //Pin, num, referencia
+PH sensorPH[] = {PH(34,   "1",  5.0)};
 
-//---PH-------------------------------------------------------------------
-
+//---ULTRASONICO-------------------------------------------------------------------
 class Ultrasonico { //nivel de agua JSN-SR04T-2.0
   public:
     const int tPin;
@@ -133,7 +133,6 @@ class Ultrasonico { //nivel de agua JSN-SR04T-2.0
       duracion = pulseIn(ePin, HIGH);
 
       distancia = duracion * 0.034 / 2;
-      Serial.print("SON"); Serial.print(numero); Serial.print(":");
       return distancia;
     }
 };
