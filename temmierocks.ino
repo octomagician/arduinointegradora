@@ -52,82 +52,82 @@ void loop() {
 /*   if (isConnected){ */
 
   //inician impresión de lecturas en formato del protocolo
+  //---TEMPERATURA-------------------------------------------------------------------
  for (int i = 0; i < sizeof(temperatura) / sizeof(temperatura[0]); i++) {
     float temp = temperatura[i].leerTemperatura();
-      Serial.print("TEM"); Serial.print(temperatura[i].numero); Serial.print(":");
-      Serial.println(temp);
 
-    if (!TemperaturaFeed->save(temp))
-    { 
-      Serial.print("TEM"); Serial.print(temperatura[i].numero); Serial.print(":");
-      Serial.println("ERROR");
+    //esto es para validar si se está guardando o algo así ya no me acuerdo
+    if (isnan(temp)) {
+        Serial.println("E-NAN");
     } else {
-      Serial.print("TEM"); Serial.print(temperatura[i].numero); Serial.print(":");
-      Serial.println("DONE");
+        if (!TemperaturaFeed->save(temp))
+        { 
+          Serial.println("E-SAVE");
+        } else {
+          Serial.print("TEM"); Serial.print(temperatura[i].numero); Serial.print(":");
+          Serial.println(temp);
+        }
     }
+    delay(5000);
     // delay(180000);
     }
-    
+  
+  //---TURBIDEZ-------------------------------------------------------------------
   for (int i = 0; i < sizeof(turbidez) / sizeof(turbidez[0]); i++) {
       float turbi = turbidez[i].obtenerTurbi();
-        Serial.print("TUR"); Serial.print(turbidez[i].numero); Serial.print(":");
-        Serial.println(turbi);
+/*         Serial.print("TUR"); Serial.print(turbidez[i].numero); Serial.print(":"); */
+        
           if (!TurbidezFeed->save(turbi))
         { 
-                  Serial.print("TUR"); Serial.print(turbidez[i].numero); Serial.print(":");
-        Serial.println("ERROR");
-      } else {
-                Serial.print("TUR"); Serial.print(turbidez[i].numero); Serial.print(":");
-        Serial.println("DONE");
-      }
+          Serial.println("ERROR");
+        } else {
+            Serial.print("TUR"); Serial.print(turbidez[i].numero); Serial.print(":");
+            Serial.println(turbi);
+        }
        // delay(60000);
      }
     
-    // Lectura de pH
+    //---PH-------------------------------------------------------------------
      for (int i = 0; i < sizeof(sensorPH) / sizeof(sensorPH[0]); i++) {
       float pH = sensorPH[i].obtenerPH();
-      Serial.print("SPH"); Serial.print(sensorPH[i].numero); Serial.print(":");
-      Serial.println(pH);
-  if (!PHFeed->save(pH))
-        { 
-      Serial.print("SPH"); Serial.print(sensorPH[i].numero); Serial.print(":");
+/*       Serial.print("SPH"); Serial.print(sensorPH[i].numero); Serial.print(":"); */
+      
+      if (!PHFeed->save(pH))
+      { 
       Serial.println("ERROR");
       } else {
         Serial.print("SPH"); Serial.print(sensorPH[i].numero); Serial.print(":");
-        Serial.println("DONE");
+        Serial.println(pH);
       }
       delay(2000);
     }
 
+//---ULTRASONICO-------------------------------------------------------------------
  for (int i = 0; i < sizeof(ultrasonico) / sizeof(ultrasonico[0]); i++) {
       long distancia = ultrasonico[i].obtenerDistancia();
-    Serial.print("SON"); Serial.print(sensorPH[i].numero); Serial.print(":");
-        Serial.println(distancia);
-    if (!UltrasonicoFeed->save(distancia))
-        { 
-    Serial.print("SON"); Serial.print(sensorPH[i].numero); Serial.print(":");
-     Serial.println("ERROR");
-      } else {
-    Serial.print("SON"); Serial.print(sensorPH[i].numero); Serial.print(":");
-            Serial.println("DONE");
-      }
-      delay(2000);    
-      
-      }
+/*     Serial.print("SON"); Serial.print(sensorPH[i].numero); Serial.print(":"); */
+        
+        if (!UltrasonicoFeed->save(distancia))
+            { 
+            Serial.println("ERROR");
+            } else {
+            Serial.print("SON"); Serial.print(sensorPH[i].numero); Serial.print(":");
+            Serial.println(distancia);
+            }
+            delay(2000);    
+            }
 
-    // Lectura de TDS
+//---TDS-------------------------------------------------------------------
      for (int i = 0; i < sizeof(tds) / sizeof(tds[0]); i++) {
       float TDS = tds[i].obtenerTDS();
-        Serial.print("TDS"); Serial.print(tds[i].numero); Serial.print(":");
-        Serial.println(TDS);
+/*         Serial.print("TDS"); Serial.print(tds[i].numero); Serial.print(":"); */
 
     if (!UltrasonicoFeed->save(TDS))
         { 
-    Serial.print("TDS"); Serial.print(tds[i].numero); Serial.print(":");
      Serial.println("ERROR");
       } else {
     Serial.print("TDS"); Serial.print(tds[i].numero); Serial.print(":");
-            Serial.println("DONE");
+    Serial.println(TDS);
       }
       delay(2000);
     }

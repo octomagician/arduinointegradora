@@ -18,17 +18,20 @@ boolean stringComplete = false;
 String commandString = "";
 boolean isConnected = false;
 
-//tds
-#define TDS_REF_VOLTAGE 3.3
-#define TDS_MAX_VOLTAGE 2.3
-#define TDS_CALIBRATION 0.5
-
 //-- ADAFRUIT -----------------------------
-#define IO_USERNAME "octomagician"
-#define IO_KEY "aio_QwgH65hnjTq2yQJMPXOcRiX3jWnQ"
+/* #define IO_USERNAME "octomagician"
+#define IO_KEY "aio_GHfA32Pk81exdR8lJI73kNFjuuCl" */
 
-#define WIFI_SSID "examen_2"
-#define WIFI_PASS "exameniot"
+#define IO_USERNAME "Treckersillo"
+#define IO_KEY "aio_eZoh40EOaQ9hrWLgMiEGua8C7yE0"
+
+/* #define WIFI_SSID "examen_2"
+#define WIFI_PASS "exameniot" */
+
+
+#define WIFI_SSID "TheOffice2.4G"
+#define WIFI_PASS "15TamalesDeRojo@"
+
 
 // Inicializar el objeto de Adafruit IO con WiFi
 AdafruitIO_WiFi io(IO_USERNAME, IO_KEY, WIFI_SSID, WIFI_PASS);
@@ -40,12 +43,30 @@ void handleMessage(AdafruitIO_Data *data) {
   Serial.println(data->value());
 }
 
+//---BOMBA-------------------------------------------------------------------
+class Bomba {
+  public:
+    const int relayPin;
+    String numero;
+
+    Bomba(int logica, String num)
+    : relayPin(logica), numero(num){
+    }
+
+    float kaboom() {
+      pinMode(relayPin, OUTPUT); // Configura el pin del relé como salida
+      digitalWrite(relayPin, HIGH);
+    }
+};
+                  //logica, i
+Bomba bomba[] = {Bomba(14, "1")}; 
+
 //---TEMPERATURA-------------------------------------------------------------------
 class Temperatura {
   public:
-    const int thermoDO;
-    const int thermoCS;
-    const int thermoCLK;
+    const int thermoDO; //verde
+    const int thermoCS; //amarillo
+    const int thermoCLK; //morado
     String numero;
     MAX6675 thermocouple;
 
@@ -57,8 +78,9 @@ class Temperatura {
       return thermocouple.readCelsius();
     }
 };
-                                             //DO, CS, CLK, i
+                                        //DO, CS, CLK, i
 Temperatura temperatura[] = {Temperatura(19, 21, 22, "1")}; 
+
 
 //---TURBIDEZ-------------------------------------------------------------------
 class Turbidez {
@@ -97,7 +119,7 @@ class PH {
       pinMode(phPin, INPUT);
     }
 
-    float obtenerVoltaje() {
+    float obtenerPH() {
       int phRaw = analogRead(phPin); // Leer valor analógico
       float pH = (phRaw / 4095.0) * refVoltage; // Convertir a voltaje
       return pH;
@@ -139,33 +161,32 @@ class Ultrasonico { //nivel de agua JSN-SR04T-2.0
 
 
 Ultrasonico ultrasonico[] = {
-    Ultrasonico(5, 18, "1")
+              //trig, echo, i
+              //v,    a
+    Ultrasonico(5,    18,   "1")
 };
-#define TDS_REF_VOLTAGE 3.3
-#define TDS_MAX_VOLTAGE 2.3
-#define TDS_CALIBRATION 0.5
 
-//TDS
+//---TDS-------------------------------------------------------------------
 class TDS {
-  public:
-    const int TDSPin;
+public:
+    const int TDSPin;      // Pin analógico conectado al sensor TDS
     String numero;
-    const int maxV;
-    const int refV;
-    const int cali;
+    const float maxV;      // Máximo voltaje de salida del sensor
+    const float refV;      // Voltaje de referencia del sensor
+    const float cali;      // Calibración del sensor
 
-  TDS(int pin, String num, int max, int ref, int cali)
-  : TDSPin(pin), numero(num), maxV(max), refV(ref), cali(cali){}
+    TDS(int pin, String num, float maxVoltage, float referenceVoltage, float calibration)
+        : TDSPin(pin), numero(num), maxV(maxVoltage), refV(referenceVoltage), cali(calibration) {}
 
     float obtenerTDS() {
-    int tdsRaw = analogRead(TDSPin);
-    float tdsVoltage = (tdsRaw / 4095.0) * TDS_REF_VOLTAGE;
-    float tdsV = (tdsVoltage / TDS_MAX_VOLTAGE) * 1000 + TDS_CALIBRATION;
-    return tdsV;
-  }
+        int tdsRaw = analogRead(TDSPin);  // Leer valor analógico del sensor
+        float tdsVoltage = (tdsRaw / 4095.0) * refV; // Calcula el voltaje basado en la referencia
+        float tdsV = (tdsVoltage / maxV) * 1000 + cali; // Escala el voltaje a ppm con calibración
+        return tdsV;
+    }
 };
 
-TDS tds[] = {
-  TDS(32, "1", 2.3, 3.3, 0.5)
-};
-
+ TDS tds[] = {
+	//pin, i, maxV, refV, cali
+        TDS(32, "1", 2.3, 3.3, 0.5)
+    };
