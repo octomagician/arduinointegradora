@@ -113,6 +113,10 @@ void loop() {
             } else {
             Serial.print("SON"); Serial.print(sensorPH[i].numero); Serial.print(":");
             Serial.println(distancia);
+
+            //el tope máx del recipiente es 20cm de la orilla
+            if (distancia > 20) { bomba[i].kaboom(); }
+
             }
             delay(2000);    
             }
