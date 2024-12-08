@@ -51,11 +51,14 @@ class Bomba {
 
     Bomba(int logica, String num)
     : relayPin(logica), numero(num){
+    pinMode(relayPin, OUTPUT); // Configura el pin del relé como salida
     }
 
     float kaboom() {
-      pinMode(relayPin, OUTPUT); // Configura el pin del relé como salida
       digitalWrite(relayPin, HIGH);
+    }
+     void nokaboom() {
+      digitalWrite(relayPin, LOW);
     }
 };
                   //logica, i

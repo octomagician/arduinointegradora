@@ -115,8 +115,12 @@ void loop() {
             Serial.println(distancia);
 
             //el tope máx del recipiente es 20cm de la orilla
-            if (distancia > 20) { bomba[i].kaboom(); }
-
+            if (distancia > 20) {
+               bomba[i].kaboom(); 
+               }
+               else {
+               bomba[i].nokaboom(); 
+               }
             }
             delay(2000);    
             }
